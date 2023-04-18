@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<!-- NOTE
+Span and div are both generic HTML elements that group together 
+related parts of a web page. However, they serve different functions. 
+A div element is used for block-level organization and styling of page 
+elements, whereas a span element is used for inline organization and styling.
+-->
+<html>
+	<head>
+		<title>{{page_title}}</title>
+		<link href={{url_for('static',filename='css/styles.css')}} rel='stylesheet'>
+	</head>
+	
+	<body>
+		{% include "header.html" %}
+        
+        <div class="container">
+            
+        {% if page_type == 'new' %}	
+            <span class="highlight-blue">Register a New Student</span>
+            <br>
+            <span class="instruction">Use the following form to register a new student:</span>
+            
+            <form action="{{form_meta['action']}}" method="{{form_meta['method']}}">
+                <table>
+                    {% for name, value in form_data.items() %}
+                        <tr>
+                            <td class="highlight-black"><label for="{{name}}">{{name.title().replace('_', ' ')}}</label></td>
+                            <td><input id='{{name}}' type='text' name='{{name}}' value='{{value}}'></td>
+                        </tr>
+                    {% endfor %}
+                     
+                    <tr>
+                       <td colspan="2" align="right"><input type="submit" value="Submit"></td>
+                    </tr>
+                </table>
+            </form>
+            <br><br>
+
+            
+        {% elif page_type == 'confirm' %}
+            <span class="highlight-blue">Register a New Student (Submission)</span>
+        
+            <p>Please confirm the details below:</p>
+            {% for name, value in form_data.items() %}
+                <p>{{name.title().replace('_', ' ')}}: {{value}}</p>
+            {% endfor %}
+            <br>
+                
+            <form action="{{form_meta['action']}}" method="{{form_meta['method']}}">
+                {% for name, value in form_data.items() %}
+                    <input type="hidden" name="{{name}}" value="{{value}}">
+                {% endfor %}
+                <input type="submit" value="Submit">
+            </form>
+
+            
+        {% elif page_type == 'record_exist' %}
+            <p>Record already exists!</p>
+
+            
+        {% elif page_type == 'add' %}  
+            <span class="highlight-blue">Register a New Student (Success)</span>
+        
+            <p> The following student has been successfully registered!</p>
+            <br>
+            <table>
+                {% for name, value in form_data.items() %}
+                    <tr>
+                        <td>{{name.title().replace('_', ' ')}}</td>
+                        <td>{{value}}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+            <br>   
+
+            
+        {% elif page_type == 'view_all_students' %}	
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Class</th>
+                </tr>
+                
+                {% for record in collection %}
+                    <tr>
+                        {% for value in record.values() %}
+                            <td>{{value}}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </table>
+
+            
+         {% elif page_type == 'search_student_form' %}	
+            <form action="/search_student_result">
+                  <input type="text" placeholder="Search for student.." name="student_name">
+                  <input type="submit" value="Submit" style="">
+            </form>
+
+            
+        {% elif page_type == 'search_student_result' %}	
+            {% if search_result == None %}
+                <p>Record not found!</p>
+            {% else %}
+                {% for name, value in search_result.items() %}
+                    <p>
+                        {{name}}: {{value}}
+                    </p>
+                {% endfor %}
+            {% endif %}
+
+
+        {% elif page_type == 'update_student' %}	
+            <span class="highlight-blue">Update a student record</span>
+            <p>Use the following form to update a student record:</p>
+            <form action="{{form_meta['action']}}" method="{{form_meta['method']}}">
+                <input name="student_name" value=''>
+                <input type="submit" value="Submit">
+            </form>
+
+            
+        {% elif page_type == 'update_student_record_not_found' %}
+            <span class="highlight-blue">Update a student record</span>
+            <br>
+            <p>Use the following form to update a student record:</p>
+            <p>Record not found!</p>
+
+            
+        {% elif page_type == 'update_student_record_found' %}
+            <span class="highlight-blue">Update a student record</span>
+            <br>
+            <p>Use the following form to update a student record:</p>
+            <form action="{{form_meta['action']}}" method="{{form_meta['method']}}">
+                {% for name, value in search_result.items() %}
+                    <label for="{{name}}">{{name.title().replace('_', ' ')}}</label>
+                    <input name="{{name}}" value="{{value}}">
+                    <br>
+                {% endfor %}
+                <input type="hidden" name="old_student_name" value="{{search_result['student_name']}}">
+                <input type="submit" value="Submit">
+            </form>
+
+            
+        {% elif page_type == 'update_student_successful' %}         
+            <span class="highlight-blue">Update a student record</span>
+            <br>
+            <p>Update Status..</p>
+            <p>The record has been successfully updated</p>
+
+
+        {% elif page_type == 'delete_student' %}
+            <span class="highlight-blue">Delete a student record</span>
+            <p>Use the following form to delete a student record:</p>
+            <form action="{{form_meta['action']}}" method="{{form_meta['method']}}">
+                <input name="student_name" value=''>
+                <input type="submit" value="Submit">
+            </form>
+
+            
+        {% elif page_type == 'delete_student_record_not_found' %}
+            <span class="highlight-blue">Delete a student record</span>
+            <p>Use the following form to delete a student record:</p>
+            <p>Record not found!</p>
+
+            
+        {% elif page_type == 'delete_student_successful' %}
+            <span class="highlight-blue">Delete a student record</span>
+            <p>Deletion status..</p>
+            <p>The record has been successfully deleted</p>   
+            
+        {% endif %}
+        
+        </div>
+            
+        {% include "footer.html" %}
+	</body>
+	
+</html>
