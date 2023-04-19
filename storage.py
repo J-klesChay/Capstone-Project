@@ -9,6 +9,14 @@ class Student:
         return f'Student object\nName: {self.name}, Age: {self.age}, Year Enrolled: {self.year_enrolled}, Graduating Year: {self.graduating_year}'
 
 
+class Class:
+    def __init__(self, name, level):
+        self.name = name
+        self.level = level
+
+    def __repr__(self):
+        return f'Class object\nName: {self.name}, Level: {self.level}'
+
 
 class Collection:
     def __init__():
