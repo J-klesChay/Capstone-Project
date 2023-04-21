@@ -1,0 +1,90 @@
+*Find a way of ensuring that they enter their name as per NRIC or just beg the
+
+
+(Add new CCA)
+
+Click on it first, then it will ask you to input your name 
+
+Ask them for input
+
+Ask them to choose from a drop down of CCA *CATEGORIES*
+-> e.g. Sports etc.
+
+Ask them to choose their CCA
+
+Save selection to sqlite 
+
+
+
+
+(Activity)
+
+Ask for the user's name
+Show the user's CCA
+
+Ask for inputs
+
+Save details
+
+
+
+
+
+(View existing Student)
+
+Ask for student's name and display their name with Class and CCA details
+in the for:
+
+Name: 
+Class: 
+CCA:
+
+
+
+(View Classes)
+
+Have a drop down menu of all the classes that also allows user to straight up type in the class to check
+
+Display Students in that class along with their respective CCAs (maybe implement a hide CCA option, like a checkbox)
+
+
+
+
+(View CCA)
+
+Have a drop down of all CCA *CATEGORIES*
+
+Ask student to choose CCA
+
+Display all the members in the CCA along with their respective classes (maybe implement a hide classes option, like a checkbox)
+
+
+
+(View activity)
+
+Have a drop down of all CCA *CATEGORIES*
+
+Ask student to choose CCA
+
+Have a drop down of all activities coordinated by that CCA
+
+Display activity in the format:
+
+Category: str {Achievement, Enrichment, Leadership, Service}
+{Roles in order of leader then vice-leader...}: str
+Award: str (optional)
+
+
+
+
+
+
+( Edit Membership(Student-CCA)/ Participation(Student-Activity) )
+
+Ask them to input their name
+
+Have a drop down of all their CCAs/Activities for them to edit
+
+Let them edit
+
+Save changes
