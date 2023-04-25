@@ -11,6 +11,10 @@ def index():
     '''
     return render_template('index.html')
 
+@app.route('/new_cca')
+def new_cca():
+    return render_template('cca.html')
+
 if __name__ == '__main__':
     app.run('0.0.0.0')
 
