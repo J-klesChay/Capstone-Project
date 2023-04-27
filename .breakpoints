@@ -1,3 +1,12 @@
 {
-  "files": {}
+  "files": {
+    "storage.py": [
+      {
+        "id": "e3b652ac-8ff7-4550-ae40-aa1eff65b81b",
+        "line": 30,
+        "version": 1901,
+        "index": 812
+      }
+    ]
+  }
 }

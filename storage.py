@@ -1,9 +1,12 @@
+import sqlite3
+
 class Student:
-    def __init__(self, name, age, year_enrolled, graduating_year):
+    def __init__(self, name, age, year_enrolled, graduating_year, _class):
         self.name = name
         self.age = age
         self.year_enrolled = year_enrolled
         self.graduating_year = graduating_year
+        self._class = _class
 
     def __repr__(self):
         return f'Student object\nName: {self.name}, Age: {self.age}, Year Enrolled: {self.year_enrolled}, Graduating Year: {self.graduating_year}'
@@ -79,8 +82,105 @@ class StudentActivity:
 
 
 class Collection:
-    pass
+    """
+    Models a Collection of records using SQLite3
+
+    Attributes:
+    (-) `dbname`: the sqlite Database filename
+    (-) `tblname`: the name of the table we will be using
+
+    Methods:
+    (+) `insert(record)`: Inserts a record into the collection, after checking whether it is present.
+    (+) `find(name)`: Find the record with matching name, and returns a copy of it.
+    (+) `findall()`: Returns all the records in the data attribute.
+    (+) `update(name, record)`: Update the record with matching name, by replacing it's elements with the given record.
+    (+) `delete(name)`: Deletes the record with matching name.
+    """
+    
+    def __init__(self, dbname, tblname, primary_key):
+        self.dbname = dbname
+        self.tblname = tblname
+        self.primary_key = primary_key
+
+    
+    def __repr__(self):
+        return f"{self.tblname} table under {self.dbname} database(SQLite3).\nContains the following data:\n{str(self.findall())}"
+
+        
+    def _execute(self, query, **kwargs):
+        conn = sqlite3.connect(self.dbname)
+        conn.row_factory = sqlite3.Row
+        c = conn.cursor()
+        if 'fetch' in kwargs:
+            result = None
+        
+            if kwargs['fetch'] == 'one':
+                c.execute(query, kwargs['params'])
+                result = c.fetchone()
+            elif kwargs['fetch'] == 'all':
+                c.execute(query)
+                result = c.fetchall()
+
+            return result
+
+        else:
+            c.execute(query, kwargs['params'])
+            conn.commit()
             
+        conn.close()
+
+        
+    def find(self, name):
+        query = f"""                                                       SELECT * FROM {self.tblname}                              WHERE {self.primary_key} = ?;                             """
+        params = (name,)
+        result = self._execute(query, params = params, fetch = 'one')
+        if result is not None:
+            return dict(result)
+        return None
+
+        
+    def findall(self):
+        query = f"""                                                       SELECT * FROM {self.tblname}                              """
+        result = self._execute(query, fetch = 'all')
+        if result != []:
+            return [dict(row) for row in result]
+        return None
+
+        
+    def insert(self, record):
+        result = self.find(record[self.primary_key])
+        if result is not None:
+            print('Record is already present!')
+        else:
+            query = f"""                                                       INSERT INTO {self.tblname}                                VALUES (?, ?);                                            """
+            params = tuple(record.values())
+            self._execute(query, params = params)
+
+    
+    def delete(self, name):
+        result = self.find(name)
+        if result is None:
+            print('Record not found!')
+        else:
+            query = f"""                                                       DELETE FROM {self.tblname}                                WHERE {self.primary_key} = ?;                             """
+            params = (name,)
+            self._execute(query, params = params)
+
+            
+    def update(self, name, record):
+        result = self.find(name)
+        if result is None:
+            print('Record not found!')
+        else:
+            keys = list(record.keys())
+            update_string = ','.join([f'"{key}" = ?' for key in keys])
+            params = tuple(record.values())  
+            query = f"""                                                       UPDATE {self.tblname}                                     SET {update_string}                
+                     WHERE {self.primary_key} = '{name}';
+                     """
+            self._execute(query, params=params)
+
+
 class StudentCollection(Collection):
     pass
 
@@ -95,3 +195,8 @@ class ClassCollection(Collection):
 
 class ActivityCollection(Collection):
     pass
+
+from storage import Student
+#Testing storage classes
+s = Student('Gary', '17', '2022', '2023', '2227')
+print(s)
