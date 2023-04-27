@@ -1,4 +1,4 @@
-*Find a way of ensuring that they enter their name as per NRIC or just beg the
+    *Find a way of ensuring that they enter their name as per NRIC or just beg the
 
 
 (Add new CCA)

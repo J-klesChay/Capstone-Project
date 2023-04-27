@@ -1,39 +1,51 @@
 <!DOCTYPE html>
-
 <html>
-
+    
 <head>
-
-<link href={{url_for('static',filename='css/styles.css')}} rel='stylesheet'>
-    
-<style>
-body {
-  background-image: url({{url_for('static', filename='images/basketball.jfif')}});
-  background-size: cover;
-}
-
-</style>
+    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+    <style>
+        body {
+            background-image: url({{ url_for('static', filename='images/basketball.jfif') }});
+            background-size: cover;
+        }
+    </style>
 </head>
-
+    
 <body>
-    <div> 
+    {% include "header.html" %}
+    <div class="container">
+
+        
+        {% if page_type == "new_cca" %}
         <div>
-        <h1 class="highlight-blue" style="float: right;">
-            Add a CCA
-        </h1>
+            <h1 class="highlight-blue" style="float: right;">Add a CCA</h1>
+        </div>
+        <div>
+            <form action="{{ form_meta['action'] }}" method="{{ form_meta['method'] }}">
+                <label for="student_name">Please input your name (as per NRIC):</label>
+                <input type="text" id="student_name" name="student_name" required>
+                <input type="submit" value="Submit">
+            </form>
         </div>
 
+        
+        {% elif page_type == "select_category" %}
         <div>
-            <p class="highlight-red" style="float: right;">
-        Please input your name (as per NRIC):
-            </p> 
+            <h1 class="highlight-blue" style="float: right;">Select CCAs</h1>
         </div>
+        <div>
+            <form action="{{ url_for('save_cca') }}" method="POST">
+                <label for="cca">Choose one CCA:</label>
+                <select id="cca" name="cca" required>
+                    {% for cca in ccas %}
+                    <option value="{{ cca }}">{{ cca }}</option>
+                    {% endfor %}
+                </select>
+                <input type="submit" value="Save">
+            </form>
+        </div>
+        {% endif %}
     </div>
-    
-
-
+    {% include "footer.html" %}
 </body>
-    
 </html>
-
-
