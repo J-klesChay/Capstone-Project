@@ -3,9 +3,9 @@ import sqlite3
 class Student:
     def __init__(self, name, age, year_enrolled, graduating_year, class_):
         self.name = name
-        self.age = age
-        self.year_enrolled = year_enrolled
-        self.graduating_year = graduating_year
+        self.age = int(age)
+        self.year_enrolled = int(year_enrolled)
+        self.graduating_year = int(graduating_year)
         self.class_ = class_
 
     def __repr__(self):
@@ -236,15 +236,100 @@ class StudentCollection(Collection):
             cur.execute(query)
             # conn.close()
 
+
 class CCACollection(Collection):
-    pass
+    def __init__(self):
+        self._tblname = 'CCAs'
+        self._dbname = 'mywebapp.db'
+        self.primary_key = 'name'
+        
+        super().__init__(self._dbname, self._tblname, self.primary_key)
+        self._create_table()
+        
+    def _create_table(self):
+        query = f"""
+                 CREATE TABLE IF NOT EXISTS 
+                 '{self._tblname}'(
+                    'name' TEXT,
+                    'level' TEXT,
+                    PRIMARY KEY('name')
+                 ); 
+                 """
+        with sqlite3.connect(self._dbname) as conn:
+            cur = conn.cursor()
+            cur.execute(query)
+            # conn.close()
+
 
 class SubjectCollection(Collection):
-    pass
+    def __init__(self):
+        self._tblname = 'subjects'
+        self._dbname = 'mywebapp.db'
+        self.primary_key = 'name'
+        
+        super().__init__(self._dbname, self._tblname, self.primary_key)
+        self._create_table()
+        
+    def _create_table(self):
+        query = f"""
+                 CREATE TABLE IF NOT EXISTS 
+                 '{self._tblname}'(
+                    'name' TEXT,
+                    'level' TEXT,
+                    PRIMARY KEY('name')
+                 ); 
+                 """
+        with sqlite3.connect(self._dbname) as conn:
+            cur = conn.cursor()
+            cur.execute(query)
+            # conn.close()
+
 
 class ClassCollection(Collection):
-    pass
+    def __init__(self):
+        self._tblname = 'classes'
+        self._dbname = 'mywebapp.db'
+        self.primary_key = 'name'
+        
+        super().__init__(self._dbname, self._tblname, self.primary_key)
+        self._create_table()
+        
+    def _create_table(self):
+        query = f"""
+                 CREATE TABLE IF NOT EXISTS 
+                 '{self._tblname}'(
+                    'name' TEXT,
+                    'type' TEXT,
+                    PRIMARY KEY('name')
+                 ); 
+                 """
+        with sqlite3.connect(self._dbname) as conn:
+            cur = conn.cursor()
+            cur.execute(query)
+            # conn.close()
+
 
 class ActivityCollection(Collection):
-    pass
+    def __init__(self):
+        self._tblname = 'activities'
+        self._dbname = 'mywebapp.db'
+        self.primary_key = 'name'
+        
+        super().__init__(self._dbname, self._tblname, self.primary_key)
+        self._create_table()
+        
+    def _create_table(self):
+        query = f"""
+                 CREATE TABLE IF NOT EXISTS 
+                 '{self._tblname}'(
+                    'description' TEXT,
+                    'start_date' TEXT,
+                    'end_date' TEXT,
+                    PRIMARY KEY('description')
+                 ); 
+                 """
+        with sqlite3.connect(self._dbname) as conn:
+            cur = conn.cursor()
+            cur.execute(query)
+            # conn.close()
 

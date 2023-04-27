@@ -6,7 +6,7 @@ print(test)
 print(test)
 from storage import *
 #Testing storage classes
-student = Student('Gary', '17', '2022', '2023', '2227')
+student = Student('Gary', 17, 2022, 2023, '2227')
 print(vars(student))
 print(student)
 print('')
@@ -49,14 +49,14 @@ s.insert(record1)
 print(s)
 print('')
 
-student2 = Student('Jkles', '17', '2022', '2023', '2227')
+student2 = Student('Jkles', 17, 2022, 2023, '2227')
 record2 = vars(student2)
 print(f'Inserting record {record2}')
 s.insert(record2)
 print(s)
 print('')
 
-student.class_ = 1234
+student.class_ = '1234'
 new_record1 = vars(student)
 print(f'Updating record Gary to {new_record1}')
 s.update('Gary', new_record1)
