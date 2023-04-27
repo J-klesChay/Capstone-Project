@@ -75,11 +75,27 @@ class StudentActivity:
         self.category = category
         self.role = role
         self.award = award
-        self.hours = hours
+        self.hours = int(hours)
 
     def __repr__(self):
         return f'Student-Activity object\nStudent Name: {self.student_name}, Activity Description: {self.activity_description}, Category: {self.category}, Role: {self.role}, Award: {self.award}, Hours: {self.hours}'
 
+
+def remove_quotes_in_tuple(tuple):
+    string = '('
+    for element in tuple:
+        string += element
+        string += ', '
+    string = string.strip(', ')
+    string += ')'
+
+    return string
+    
+def placeholder_string(n):
+    tuple = ('?',)*n
+    string = remove_quotes_in_tuple(tuple)
+    
+    return string
 
 class Collection:
     """
@@ -109,6 +125,9 @@ class Collection:
 
     
     def _execute(self, query, **kwargs):
+        print(query)
+        print(f"Params: {kwargs.get('params')}")
+        
         conn = sqlite3.connect(self.dbname)
         conn.row_factory = sqlite3.Row
         c = conn.cursor()
@@ -128,12 +147,13 @@ class Collection:
             
         #DML
         else:
+            
             c.execute(query, kwargs['params'])
             conn.commit()
             
         conn.close()
 
-    
+        
     def clear(self):
         query = f"""                         
                  DROP TABLE IF EXISTS {self.tblname}
@@ -146,16 +166,28 @@ class Collection:
 
     
     def find(self, name):
+        if not isinstance(self.primary_key, tuple):
+            primary_key_string = self.primary_key
+            string = '?'
+            params = (name,)
+            
+        else:
+            primary_key_string = remove_quotes_in_tuple(self.primary_key)
+            string = placeholder_string(len(self.primary_key))
+            params = name
+            
         query = f"""           
                  SELECT * FROM {self.tblname}    
-                 WHERE {self.primary_key} = ?;      
+                 WHERE {primary_key_string} = {string};
                  """
-        params = (name,)
+
         result = self._execute(query, params = params, fetch = 'one')
+        print(result)
+        
         if result is not None:
             return dict(result)
         return None
-
+        
     
     def findall(self):
         query = f"""                            
@@ -168,14 +200,18 @@ class Collection:
 
         
     def insert(self, record):
-        result = self.find(record[self.primary_key])
+        if not isinstance(self.primary_key, tuple):
+            result = self.find(record[self.primary_key])
+        else:
+            result = self.find((record['student_name'], record['subject_name']))
+            
         if result is not None:
             print('Record is already present!')
         else:
-            # test = str(("?",)*5).replace('"', '')
+            string = placeholder_string(len(record))
             query = f"""                        
                      INSERT INTO {self.tblname}
-                     VALUES (?, ?, ?, ?, ?);       
+                     VALUES {string};       
                      """
             params = tuple(record.values())
             self._execute(query, params = params)
@@ -186,11 +222,20 @@ class Collection:
         if result is None:
             print('Record not found!')
         else:
+            if not isinstance(self.primary_key, tuple):
+                primary_key_string = self.primary_key
+                string = '?'
+                params = (name,)
+            else:
+                primary_key_string = remove_quotes_in_tuple(self.primary_key)
+                string = placeholder_string(len(self.primary_key))
+                params = name
+                
             query = f"""                       
                      DELETE FROM {self.tblname} 
-                     WHERE {self.primary_key} = ?;  
+                     WHERE {primary_key_string} = {string};  
                      """
-            params = (name,)
+            
             self._execute(query, params = params)
 
             
@@ -201,11 +246,19 @@ class Collection:
         else:
             keys = list(record.keys())
             update_string = ','.join([f'"{key}" = ?' for key in keys])
-            params = tuple(record.values())  
+            params = tuple(record.values()) 
+            
+            if not isinstance(self.primary_key, tuple):
+                primary_key_string = self.primary_key
+                string = f"'{name}'"
+            else:
+                primary_key_string = remove_quotes_in_tuple(self.primary_key)
+                string = name
+            
             query = f"""                        
                      UPDATE {self.tblname}          
                      SET {update_string}         
-                     WHERE {self.primary_key} = '{name}';
+                     WHERE {primary_key_string} = {string};
                      """
             self._execute(query, params=params)
 
@@ -237,9 +290,9 @@ class StudentCollection(Collection):
             # conn.close()
 
 
-class CCACollection(Collection):
+class ClassCollection(Collection):
     def __init__(self):
-        self._tblname = 'CCAs'
+        self._tblname = 'classes'
         self._dbname = 'mywebapp.db'
         self.primary_key = 'name'
         
@@ -285,9 +338,33 @@ class SubjectCollection(Collection):
             # conn.close()
 
 
-class ClassCollection(Collection):
+class StudentSubjectCollection(Collection):
     def __init__(self):
-        self._tblname = 'classes'
+        self._tblname = 'studentsubjects'
+        self._dbname = 'mywebapp.db'
+        self.primary_key = ('student_name', 'subject_name')
+        
+        super().__init__(self._dbname, self._tblname, self.primary_key)
+        self._create_table()
+        
+    def _create_table(self):
+        query = f"""
+                 CREATE TABLE IF NOT EXISTS 
+                 '{self._tblname}'(
+                    'student_name' TEXT,
+                    'subject_name' TEXT,
+                    PRIMARY KEY('student_name', 'subject_name')
+                 ); 
+                 """
+        with sqlite3.connect(self._dbname) as conn:
+            cur = conn.cursor()
+            cur.execute(query)
+            # conn.close()
+
+
+class CCACollection(Collection):
+    def __init__(self):
+        self._tblname = 'CCAs'
         self._dbname = 'mywebapp.db'
         self.primary_key = 'name'
         
@@ -309,11 +386,15 @@ class ClassCollection(Collection):
             # conn.close()
 
 
+class StudentCCACollection(Collection):
+    pass
+
+
 class ActivityCollection(Collection):
     def __init__(self):
         self._tblname = 'activities'
         self._dbname = 'mywebapp.db'
-        self.primary_key = 'name'
+        self.primary_key = 'description'
         
         super().__init__(self._dbname, self._tblname, self.primary_key)
         self._create_table()
@@ -333,3 +414,5 @@ class ActivityCollection(Collection):
             cur.execute(query)
             # conn.close()
 
+class StudentActivityCollection(Collection):
+    pass
