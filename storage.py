@@ -1,15 +1,15 @@
 import sqlite3
 
 class Student:
-    def __init__(self, name, age, year_enrolled, graduating_year, _class):
+    def __init__(self, name, age, year_enrolled, graduating_year, class_):
         self.name = name
         self.age = age
         self.year_enrolled = year_enrolled
         self.graduating_year = graduating_year
-        self._class = _class
+        self.class_ = class_
 
     def __repr__(self):
-        return f'Student object\nName: {self.name}, Age: {self.age}, Year Enrolled: {self.year_enrolled}, Graduating Year: {self.graduating_year}'
+        return f'Student object\nName: {self.name}, Age: {self.age}, Year Enrolled: {self.year_enrolled}, Graduating Year: {self.graduating_year}, Class: {self.class_}'
 
 
 class Class:
@@ -59,13 +59,13 @@ class StudentCCA:
 
     
 class Activity:
-    def __init__(self, start_date, end_date, description):
+    def __init__(self, description, start_date, end_date, ):
+        self.description = description
         self.start_date = start_date
         self.end_date = end_date
-        self.description = description
-        
+         
     def __repr__(self):
-        return f'Activity object\nStart Date: {self.start_date}, End Date: {self.end_date}, Description: {self.description}'
+        return f'Activity object\nDescription: {self.description}, Start Date: {self.start_date}, End Date: {self.end_date}'
 
 
 class StudentActivity:
@@ -96,21 +96,24 @@ class Collection:
     (+) `update(name, record)`: Update the record with matching name, by replacing it's elements with the given record.
     (+) `delete(name)`: Deletes the record with matching name.
     """
-    
     def __init__(self, dbname, tblname, primary_key):
         self.dbname = dbname
         self.tblname = tblname
         self.primary_key = primary_key
+        
+        self.clear()
 
     
     def __repr__(self):
         return f"{self.tblname} table under {self.dbname} database(SQLite3).\nContains the following data:\n{str(self.findall())}"
 
-        
+    
     def _execute(self, query, **kwargs):
         conn = sqlite3.connect(self.dbname)
         conn.row_factory = sqlite3.Row
         c = conn.cursor()
+
+        #DQL
         if 'fetch' in kwargs:
             result = None
         
@@ -122,25 +125,42 @@ class Collection:
                 result = c.fetchall()
 
             return result
-
+            
+        #DML
         else:
             c.execute(query, kwargs['params'])
             conn.commit()
             
         conn.close()
 
+    
+    def clear(self):
+        query = f"""                         
+                 DROP TABLE IF EXISTS {self.tblname}
+                 """
         
+        with sqlite3.connect(self.dbname) as conn:
+            cur = conn.cursor()
+            cur.execute(query)
+            # conn.close()
+
+    
     def find(self, name):
-        query = f"""                                                       SELECT * FROM {self.tblname}                              WHERE {self.primary_key} = ?;                             """
+        query = f"""           
+                 SELECT * FROM {self.tblname}    
+                 WHERE {self.primary_key} = ?;      
+                 """
         params = (name,)
         result = self._execute(query, params = params, fetch = 'one')
         if result is not None:
             return dict(result)
         return None
 
-        
+    
     def findall(self):
-        query = f"""                                                       SELECT * FROM {self.tblname}                              """
+        query = f"""                            
+                 SELECT * FROM {self.tblname}        
+                 """
         result = self._execute(query, fetch = 'all')
         if result != []:
             return [dict(row) for row in result]
@@ -152,7 +172,11 @@ class Collection:
         if result is not None:
             print('Record is already present!')
         else:
-            query = f"""                                                       INSERT INTO {self.tblname}                                VALUES (?, ?);                                            """
+            # test = str(("?",)*5).replace('"', '')
+            query = f"""                        
+                     INSERT INTO {self.tblname}
+                     VALUES (?, ?, ?, ?, ?);       
+                     """
             params = tuple(record.values())
             self._execute(query, params = params)
 
@@ -162,7 +186,10 @@ class Collection:
         if result is None:
             print('Record not found!')
         else:
-            query = f"""                                                       DELETE FROM {self.tblname}                                WHERE {self.primary_key} = ?;                             """
+            query = f"""                       
+                     DELETE FROM {self.tblname} 
+                     WHERE {self.primary_key} = ?;  
+                     """
             params = (name,)
             self._execute(query, params = params)
 
@@ -175,14 +202,39 @@ class Collection:
             keys = list(record.keys())
             update_string = ','.join([f'"{key}" = ?' for key in keys])
             params = tuple(record.values())  
-            query = f"""                                                       UPDATE {self.tblname}                                     SET {update_string}                
+            query = f"""                        
+                     UPDATE {self.tblname}          
+                     SET {update_string}         
                      WHERE {self.primary_key} = '{name}';
                      """
             self._execute(query, params=params)
 
 
 class StudentCollection(Collection):
-    pass
+    def __init__(self):
+        self._tblname = 'students'
+        self._dbname = 'mywebapp.db'
+        self.primary_key = 'name'
+        
+        super().__init__(self._dbname, self._tblname, self.primary_key)
+        self._create_table()
+        
+    def _create_table(self):
+        query = f"""
+                 CREATE TABLE IF NOT EXISTS 
+                 '{self._tblname}'(
+                    'name' TEXT,
+                    'age' INT,
+                    'year_enrolled' INT,
+                    'graduating_year' INT,
+                    'class_' TEXT,
+                    PRIMARY KEY('name')
+                 ); 
+                 """
+        with sqlite3.connect(self._dbname) as conn:
+            cur = conn.cursor()
+            cur.execute(query)
+            # conn.close()
 
 class CCACollection(Collection):
     pass
@@ -196,7 +248,3 @@ class ClassCollection(Collection):
 class ActivityCollection(Collection):
     pass
 
-from storage import Student
-#Testing storage classes
-s = Student('Gary', '17', '2022', '2023', '2227')
-print(s)
