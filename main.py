@@ -3,6 +3,8 @@ from storage import *
 
 app = Flask(__name__)
 
+s = StudentCollection()
+
 @app.route('/')
 def index():
     '''
@@ -41,11 +43,13 @@ def student_success():
         student_class = request.form["student_class"]
 
         record = {"nric":nric,
-                  "student_name":student_name,
+                 "student_name":student_name,
                  "student_age":student_age,
                  "year_enrolled":year_enrolled,
-                 "graduuating_year":graduating_year,
+                 "graduating_year":graduating_year,
                  "student_class":student_class}
+        
+        s.insert(record)
         
         return render_template('student.html',
                            page_type = 'success')
