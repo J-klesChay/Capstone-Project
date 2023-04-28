@@ -1,7 +1,8 @@
 import sqlite3
 
 class Student:
-    def __init__(self, name, age, year_enrolled, graduating_year, class_):
+    def __init__(self, NRIC, name, age, year_enrolled, graduating_year, class_):
+        self.NRIC = NRIC
         self.name = name
         self.age = int(age)
         self.year_enrolled = int(year_enrolled)
@@ -272,7 +273,7 @@ class StudentCollection(Collection):
     def __init__(self):
         self._tblname = 'students'
         self._dbname = 'mywebapp.db'
-        self.primary_key = 'name'
+        self.primary_key = 'NRIC'
         
         super().__init__(self._dbname, self._tblname, self.primary_key)
         self._create_table()
@@ -281,12 +282,13 @@ class StudentCollection(Collection):
         query = f"""
                  CREATE TABLE IF NOT EXISTS 
                  '{self._tblname}'(
+                    'NRIC' TEXT,
                     'name' TEXT,
                     'age' INT,
                     'year_enrolled' INT,
                     'graduating_year' INT,
                     'class_' TEXT,
-                    PRIMARY KEY('name')
+                    PRIMARY KEY('NRIC')
                  ); 
                  """
         with sqlite3.connect(self._dbname) as conn:

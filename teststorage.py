@@ -1,7 +1,7 @@
 from storage import *
 
 #Testing individual classes
-student = Student('Gary', 17, 2022, 2023, '2227')
+student = Student('T0534907E', 'Gary', 17, 2022, 2023, '2227')
 print(vars(student))
 print(student)
 print('')
@@ -37,7 +37,7 @@ s = StudentCollection()
 print(s)
 print('')
 
-student1 = Student('Gary', 17, 2022, 2023, '2227')
+student1 = Student('T0534907E', 'Gary', 17, 2022, 2023, '2227')
 record1 = vars(student1)
 print(f'Inserting record {record1}')
 s.insert(record1)
@@ -49,7 +49,7 @@ s.insert(record1)
 print(s)
 print('')
 
-student2 = Student('Jkles', 17, 2022, 2023, '2227')
+student2 = Student('T0123456Z', 'Jkles', 17, 2022, 2023, '2227')
 record2 = vars(student2)
 print(f'Inserting record {record2}')
 s.insert(record2)
@@ -58,28 +58,28 @@ print('')
 
 student1.class_ = '1234'
 new_record1 = vars(student1)
-print(f'Updating record {student1.name} to {new_record1}')
-s.update('Gary', new_record1)
-print(s.find('Gary'))
+print(f'Updating record {student1.NRIC} to {new_record1}')
+s.update('T0534907E', new_record1)
+print(s.find('T0534907E'))
 print(s)
 print('')
 
-print(f'Deleting record {student1.name}')
-s.delete('Gary')
+print(f'Deleting record {student1.NRIC}')
+s.delete('T0534907E')
 print(s)
 print('')
 
-print(f'Deleting record {student2.name}')
-s.delete('Jkles')
+print(f'Deleting record {student2.NRIC}')
+s.delete('T0123456Z')
 print(s)
 print('')
 
-print(f'Finding record {student1.name}(Should return none)')
-print(s.find('Gary'))
+print(f'Finding record {student1.NRIC}(Should return none)')
+print(s.find('T0534907E'))
 print('')
 
-print(f'Deleting record {student1.name} again(Should give error)')
-s.delete('Gary')
+print(f'Deleting record {student1.NRIC} again(Should give error)')
+s.delete('T0534907E')
 print('')
 
 
