@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>SAP - Register a New Student</title>
+        <link href="{{url_for('static',filename='css/student.css')}}" rel='stylesheet'>
+	</head>
+	
+	<body>
+		{% include "header.html" %}
+
+        {% if page_type == "new" %}
+
+            <div class="container">
+                <p>
+                <span class="highlight-blue">Register a New Student</span>
+                <br/><br/>
+                <span class="instruction">Use the following form to register a new student:</span>
+                </p>
+                <form action = "{{ form_meta['action'] }}" method = "{{ form_meta['method'] }}" >
+    			     <table>
+                         {% for name, value in form_data.items() %}
+    			         <tr>
+    					   <td class="tableborder" class="highlight-black"><label for="{{ name }}">{{ name.replace("_", " ").title() }}:</label></td>
+    					   <td class="tableborder"><input id=' {{ name }}' type='text' name='{{ name }}'></td>
+    				    </tr>
+                         {% endfor %}
+                         <tr>
+    					   <td class="tableborder" colspan="2" align="right"><input type="submit" value="Submit"></td>
+    				    </tr>
+    			     </table>
+    		    </form>
+    		</div>
+
+        {% elif page_type == 'confirm' %}
+
+            <div class="container">
+
+                <span class="highlight-blue">Register for a new student (Submission)</span><br>
+                <table>
+                    <tr>
+                        <td>Please confirm the details below:</td>
+                    </tr>    
+    
+                    {% for name, value in form_data.items() %}
+                    
+                        <tr>
+                            <th>{{ name.replace('_',' ').title() }}:</th>
+                            <td>{{ value }}</td>
+                        </tr>
+    
+                    {% endfor %}
+                    
+                </table>
+                    
+                <form action = "{{ form_meta['action'] }}" method = "{{ 
+    form_meta['method'] }}">
+    
+                    {% for name, value in form_data.items() %}
+                    
+                    <input type="hidden" name = "{{ name }}" value = "{{ value }}">
+    
+                    {% endfor %}
+                    
+                    <input type="submit" value="Submit">
+    
+                </form>
+                    
+            </div>
+
+        {% elif page_type == 'success' %}
+
+            <div class="container">
+
+                <span class="highlight-blue">Register for a new student (Success)</span><br>
+                <table>
+                    <tr>
+                        <td>The following student has been successfully registered!</td>
+                    </tr>    
+                    
+                </table>
+            </div>
+
+        {% endif %}
+
+    </body>
+
+</html>
