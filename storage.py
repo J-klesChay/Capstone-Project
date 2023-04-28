@@ -91,7 +91,7 @@ def remove_quotes_in_tuple(tuple):
 
     return string
     
-def placeholder_string(n):
+def generate_placeholder_string(n):
     tuple = ('?',)*n
     string = remove_quotes_in_tuple(tuple)
     
@@ -127,6 +127,7 @@ class Collection:
     def _execute(self, query, **kwargs):
         print(query)
         print(f"Params: {kwargs.get('params')}")
+        print('')
         
         conn = sqlite3.connect(self.dbname)
         conn.row_factory = sqlite3.Row
@@ -165,27 +166,29 @@ class Collection:
             # conn.close()
 
     
-    def find(self, name):
+    def find(self, key_value):
         if not isinstance(self.primary_key, tuple):
             primary_key_string = self.primary_key
-            string = '?'
-            params = (name,)
+            placeholder_string = '?'
+            params = (key_value,)
             
         else:
             primary_key_string = remove_quotes_in_tuple(self.primary_key)
-            string = placeholder_string(len(self.primary_key))
-            params = name
+            placeholder_string = generate_placeholder_string(len(self.primary_key))
+            params = key_value
             
         query = f"""           
                  SELECT * FROM {self.tblname}    
-                 WHERE {primary_key_string} = {string};
+                 WHERE {primary_key_string} = {placeholder_string};
                  """
 
         result = self._execute(query, params = params, fetch = 'one')
-        print(result)
         
         if result is not None:
+            print(f'Search result: {dict(result)}')
             return dict(result)
+            
+        print(f'Search result: None')
         return None
         
     
@@ -201,46 +204,48 @@ class Collection:
         
     def insert(self, record):
         if not isinstance(self.primary_key, tuple):
-            result = self.find(record[self.primary_key])
+            key_value = record[self.primary_key]
         else:
-            result = self.find((record['student_name'], record['subject_name']))
+            key_value = tuple(record[key] for key in tuple(self.primary_key))
+            
+        result = self.find(key_value)
             
         if result is not None:
             print('Record is already present!')
         else:
-            string = placeholder_string(len(record))
+            placeholder_string = generate_placeholder_string(len(record))
             query = f"""                        
                      INSERT INTO {self.tblname}
-                     VALUES {string};       
+                     VALUES {placeholder_string};       
                      """
             params = tuple(record.values())
             self._execute(query, params = params)
 
     
-    def delete(self, name):
-        result = self.find(name)
+    def delete(self, key_value):
+        result = self.find(key_value)
         if result is None:
             print('Record not found!')
         else:
             if not isinstance(self.primary_key, tuple):
                 primary_key_string = self.primary_key
-                string = '?'
-                params = (name,)
+                placeholder_string = '?'
+                params = (key_value,)
             else:
                 primary_key_string = remove_quotes_in_tuple(self.primary_key)
-                string = placeholder_string(len(self.primary_key))
-                params = name
+                placeholder_string = generate_placeholder_string(len(self.primary_key))
+                params = key_value
                 
             query = f"""                       
                      DELETE FROM {self.tblname} 
-                     WHERE {primary_key_string} = {string};  
+                     WHERE {primary_key_string} = {placeholder_string};  
                      """
             
             self._execute(query, params = params)
 
             
-    def update(self, name, record):
-        result = self.find(name)
+    def update(self, key_value, record):
+        result = self.find(key_value)
         if result is None:
             print('Record not found!')
         else:
@@ -250,15 +255,15 @@ class Collection:
             
             if not isinstance(self.primary_key, tuple):
                 primary_key_string = self.primary_key
-                string = f"'{name}'"
+                key_value_string = f"'{key_value}'"
             else:
                 primary_key_string = remove_quotes_in_tuple(self.primary_key)
-                string = name
+                key_value_string = key_value
             
             query = f"""                        
                      UPDATE {self.tblname}          
                      SET {update_string}         
-                     WHERE {primary_key_string} = {string};
+                     WHERE {primary_key_string} = {key_value_string};
                      """
             self._execute(query, params=params)
 

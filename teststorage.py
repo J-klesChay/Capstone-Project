@@ -222,7 +222,7 @@ print('')
 
 studentsubject1.subject_name = 'H2PHYSICS'
 new_record1 = vars(studentsubject1)
-print(f'Updating record ("Gary", "H2ECONS") to {new_record1}')
+print(f'Updating record ("Gary", "H2COMPUTING") to {new_record1}')
 s.update(('Gary', 'H2COMPUTING'), new_record1)
 print(s.find(('Gary', 'H2PHYSICS')))
 print(s)
